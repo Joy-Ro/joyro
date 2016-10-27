@@ -17634,26 +17634,30 @@ void clif_sub_ranklist(unsigned char *buf,int idx,struct map_session_data* sd, i
 	}
 }
 
-/// /blacksmith (CZ_BLACKSMITH_RANK).
-/// 0217
+/// Request for the blacksmith ranklist.
+/// /blacksmith command sends this packet to the server.
+/// 0217 (CZ_BLACKSMITH_RANK)
 void clif_parse_Blacksmith( int fd, struct map_session_data *sd ){
 	clif_ranklist(sd,0);
 }
 
-/// /alchemist (CZ_ALCHEMIST_RANK).
-/// 0218
+/// Request for the alchemist ranklist.
+/// /alchemist command sends this packet to the server.
+/// 0218 (CZ_ALCHEMIST_RANK)
 void clif_parse_Alchemist( int fd, struct map_session_data *sd ){
 	clif_ranklist(sd,1);
 }
 
-/// /taekwon (CZ_TAEKWON_RANK).
-/// 0225
+/// Request for the taekwon ranklist.
+/// /taekwon command sends this packet to the server.
+/// 0225 (CZ_TAEKWON_RANK)
 void clif_parse_Taekwon( int fd, struct map_session_data *sd ){
 	clif_ranklist(sd,2);
 }
 
-/// /pk (CZ_KILLER_RANK).
-/// 0237
+/// Request for the killer ranklist.
+/// /pk command sends this packet to the server.
+/// 0237 (CZ_KILLER_RANK)
 void clif_parse_RankingPk( int fd, struct map_session_data *sd ){
 	clif_ranklist(sd,3);
 }
@@ -17716,7 +17720,11 @@ void clif_parse_ranklist(int fd,struct map_session_data *sd) {
 	clif_ranklist(sd,rankingtype);
 }
 
-// 097e <RankingType>.W <point>.L <TotalPoint>.L (ZC_UPDATE_RANKING_POINT)
+/// Updates the fame rank points for the given ranking.
+/// 021b <points>.L <total points>.L (ZC_BLACKSMITH_POINT)
+/// 021c <points>.L <total points>.L (ZC_ALCHEMIST_POINT)
+/// 0224 <points>.L <total points>.L (ZC_TAEKWON_POINT)
+/// 097e <RankingType>.W <point>.L <TotalPoint>.L (ZC_UPDATE_RANKING_POINT)
 void clif_update_rankingpoint(struct map_session_data *sd, int rankingtype, int point) {
 	int fd=sd->fd;
 #if PACKETVER < 20130710
@@ -17736,12 +17744,12 @@ void clif_update_rankingpoint(struct map_session_data *sd, int rankingtype, int 
 	WFIFOL(fd,6) = sd->status.fame;
 	WFIFOSET(fd, packet_len(cmd));
 #else
-	WFIFOHEAD(fd,12);
+	WFIFOHEAD(fd,packet_len(0x97e));
 	WFIFOW(fd,0) = 0x97e;
 	WFIFOW(fd,2) = rankingtype;
 	WFIFOL(fd,4) = point;
 	WFIFOL(fd,8) = sd->status.fame;
-	WFIFOSET(fd,12);
+	WFIFOSET(fd,packet_len(0x97e));
 #endif
 }
 
@@ -19082,7 +19090,7 @@ void packetdb_readdb(bool reload)
 		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1, -1,  7,
-		0,  0,  0,  0,  2,  0,  0, 14,  6, 50,  -1,  0,  0,  0,  0,  -1,
+		0,  0,  0,  0,  2,  0,  0, 14,  6, 50,  -1,  0,  0, 0, 12, -1,
 	//#0x0980
 		7,  0,  0, 29, 28,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		31, 0,  0,  0,  0,  0,  0, -1,  8, 11,  9,  8,  0,  0,  0, 22,
